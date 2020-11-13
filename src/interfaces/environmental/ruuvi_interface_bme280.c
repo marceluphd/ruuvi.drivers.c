@@ -583,6 +583,14 @@ rd_status_t ri_bme280_data_get (rd_sensor_data_t * const
         rd_sensor_data_fields_t env_fields = {.bitfield = 0};
         float env_values[3];
         env_values[0] = (float) comp_data.humidity;
+        // XXX hotfix while waiting for proper BME280 rework.
+        env_values[0] += 3.0F;
+
+        if (env_values[0] > 100.0F)
+        {
+            env_values[0] = 100.0F;
+        }
+
         env_values[1] = (float) comp_data.pressure;
         env_values[2] = (float) comp_data.temperature;
         env_fields.datas.humidity_rh = 1U;
