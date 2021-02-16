@@ -341,3 +341,20 @@ void test_rt_adc_ratio_get_fail (void)
     err_code = rt_adc_ratio_get (&adc_data);
     TEST_ASSERT (RD_ERROR_INVALID_STATE == err_code);
 }
+
+void test_rt_adc_test_sample_not_null (void)
+{
+    float ret_value;
+    rd_sensor_configuration_t configuration =
+    {
+        .dsp_function = RD_SENSOR_CFG_DEFAULT,
+        .dsp_parameter = RD_SENSOR_CFG_DEFAULT,
+        .mode = RD_SENSOR_CFG_SINGLE,
+        .resolution = RD_SENSOR_CFG_DEFAULT,
+        .samplerate = RD_SENSOR_CFG_DEFAULT,
+        .scale = RD_SENSOR_CFG_DEFAULT
+    };
+    ri_adc_test_sample_ExpectWithArrayAndReturn (&configuration, RI_ADC_AIN0);
+    ret_value = rt_adc_test_sample (&configuration, RI_ADC_AIN0);
+    TEST_ASSERT (ret_value != 0.0F);
+}
