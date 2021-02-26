@@ -25,6 +25,7 @@
 #include "ble_advdata.h"
 #include "ble_types.h"
 #include "sdk_errors.h"
+#include "ble_srv_common.h"
 
 #include <stdint.h>
 
@@ -632,6 +633,11 @@ rd_status_t ri_adv_scan_start (const uint32_t window_interval_ms,
     rd_status_t err_code = RD_SUCCESS;
     nrf_ble_scan_init_t scan_init_params = {0};
     ble_gap_scan_params_t scan_params = {0};
+    ble_uuid_t target_uuid =
+    {
+      .uuid = BLE_UUID_HEART_RATE_SERVICE,
+      .type = BLE_UUID_TYPE_BLE
+    };
     uint8_t scan_phys = ruuvi_nrf5_sdk15_radio_phy_get();
     scan_params.active = 0; // Do not scan for scan responses
     ruuvi_nrf5_sdk15_radio_channels_set (scan_params.channel_mask, m_radio_channels);
@@ -670,6 +676,8 @@ rd_status_t ri_adv_scan_start (const uint32_t window_interval_ms,
         status |= nrf_ble_scan_init (&m_scan,           // Scan control structure
                                      &scan_init_params, // Default params for NULL values.
                                      on_advertisement); // Callback on data
+        status |= nrf_ble_scan_filter_set(&m_scan, SCAN_UUID_FILTER, &target_uuid);
+        status |= nrf_ble_scan_filters_enable(&m_scan, NRF_BLE_SCAN_UUID_FILTER, false);
         status |= nrf_ble_scan_start (&m_scan);
     }
 
